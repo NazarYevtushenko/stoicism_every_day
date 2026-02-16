@@ -1,0 +1,1 @@
+# stoicism_every_day
