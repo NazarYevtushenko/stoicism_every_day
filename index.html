@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Stoic | Дневник Стоика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4facfe;
+            --secondary: #00f2fe;
+            --accent: #6221d1;
+            --white: #ffffff;
+            --text-dark: #1a1a1a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* Основная карточка */
+        .app-card {
+            width: 95%;
+            max-width: 650px; 
+            background: var(--white);
+            margin: 40px 20px;
+            border-radius: 32px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header-visual {
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Иконка с возможностью смены */
+        .avatar-box {
+            width: 130px;
+            height: 130px;
+            background: white;
+            border-radius: 50%;
+            padding: 6px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: translateY(30px);
+            cursor: pointer;
+            transition: transform 0.3s ease, border 0.3s ease;
+            border: 4px solid white;
+            overflow: hidden;
+        }
+
+        .avatar-box:hover {
+            transform: translateY(25px) scale(1.05);
+            border: 4px solid var(--primary);
+        }
+
+        .avatar-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        .content {
+            padding: 70px 50px 40px 50px;
+            text-align: center;
+        }
+
+        .date-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin: 0 0 30px 0;
+            color: #2d3436;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .quote-wrap {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            line-height: 1.4;
+            color: #34495e;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .author-tag {
+            font-size: 1.1rem;
+            color: #95a5a6;
+            margin-bottom: 40px;
+        }
+
+        .reflection-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #444;
+            text-align: left;
+            border-top: 1px solid #f1f1f1;
+            padding-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .btn-random {
+            background: linear-gradient(135deg, #6221d1 0%, #a644ff 100%);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 100px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(98, 33, 209, 0.3);
+        }
+
+        .btn-random:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(98, 33, 209, 0.4);
+        }
+
+        #loader-screen { color: white; font-size: 1.2rem; }
+
+        @media (max-width: 600px) {
+            .app-card { margin: 0; border-radius: 0; min-height: 100vh; width: 100%; }
+            .content { padding: 50px 25px 30px 25px; }
+            h1 { font-size: 1.7rem; }
+            .quote-wrap { font-size: 1.3rem; }
+            .reflection-text { font-size: 1.05rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader-screen">Загрузка мудрости...</div>
+
+    <div class="app-card" id="main-ui" style="display: none;">
+        <div class="header-visual">
+            <div class="avatar-box" onclick="document.getElementById('imageInput').click()" title="Нажми, чтобы сменить фото">
+                <img id="avatarImage" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Stoic" alt="Stoic Avatar">
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="uploadImage(this)">
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="date-label" id="date-label"></div>
+            <h1 id="title"></h1>
+            <div class="quote-wrap" id="quote"></div>
+            <div class="author-tag" id="author"></div>
+            <div class="reflection-text" id="reflection"></div>
+            <button class="btn-random" onclick="loadRandom()">СЛУЧАЙНАЯ ЦИТАТА</button>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyADsFaxN8Nc4YIvip8jq6nZMimGYbFjGOU",
+        authDomain: "stoicism-b99c0.firebaseapp.com",
+        projectId: "stoicism-b99c0",
+        databaseURL: "https://stoicism-b99c0-default-rtdb.firebaseio.com",
+        storageBucket: "stoicism-b99c0.firebasestorage.app",
+        messagingSenderId: "790875492394",
+        appId: "1:790875492394:web:be79fc5f0d8db8cd8d3353"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    async function loadContent(dateKey, labelText) {
+        const snap = await get(ref(db, '/' + dateKey));
+        if (snap.exists()) {
+            const val = snap.val();
+            document.getElementById('title').innerText = val.title;
+            document.getElementById('quote').innerText = `«${val.quote}»`;
+            document.getElementById('author').innerText = val.author;
+            document.getElementById('reflection').innerText = val.reflection;
+            document.getElementById('date-label').innerText = labelText;
+            
+            document.getElementById('loader-screen').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'flex';
+        }
+    }
+
+    // Загрузка сегодняшней даты
+    window.onload = () => {
+        // Проверка сохраненной картинки
+        const savedImg = localStorage.getItem('user_avatar');
+        if (savedImg) document.getElementById('avatarImage').src = savedImg;
+
+        const d = new Date();
+        const key = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        loadContent(key, d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }));
+    };
+
+    // Глобальные функции для кнопок
+    window.loadRandom = () => {
+        const m = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const d = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        loadContent(`${m}-${d}`, "Мудрость вне времени");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.uploadImage = function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatarImage').src = e.target.result;
+                localStorage.setItem('user_avatar', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+</body>
+</html>
